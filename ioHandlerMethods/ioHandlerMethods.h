@@ -2,5 +2,6 @@
 #define IOHANDLERMETHODS_H
 
 char *promptForCommand();
+char **splitInputCommand(char *);
 
 #endif

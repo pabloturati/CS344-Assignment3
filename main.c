@@ -6,12 +6,23 @@
 
 int main()
 {
-  char *command;
+  char *inputLine;
 
   do
   {
-    command = promptForCommand();
-    printf("variable length command is: %s\n", command);
+    inputLine = promptForCommand();
+    printf("variable length command is: %s\n\n", inputLine);
+    char **tokens = splitInputCommand(inputLine);
+    free(inputLine);
+    int i = 0;
+    char *curr = tokens[i];
+    while (curr != NULL)
+    {
+      printf("Token %d is %s\n", i, curr);
+      ++i;
+      curr = tokens[i];
+    }
+    free(tokens);
 
   } while (TRUE);
 
