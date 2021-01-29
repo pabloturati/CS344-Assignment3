@@ -5,7 +5,6 @@
 #define COMMAND_MEMORY_SIZE 1024
 #define TOKEN_ARR_SIZE 64
 #define TOKEN_DELIMETERS " \t\r\n\a"
-
-char *promptStart;
+#define PROMPT_STR ": "
 
 #endif

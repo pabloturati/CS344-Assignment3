@@ -1,7 +1,8 @@
 #ifndef IOHANDLERMETHODS_H
 #define IOHANDLERMETHODS_H
 
-char *promptForCommand();
+char *readCommandline();
 char **splitInputCommand(char *);
+char **requestAndTokenizeInput();
 
 #endif

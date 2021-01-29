@@ -22,9 +22,10 @@ function generateModuleObjectsAndArchive() {
   # Create precompiled objects
   gcc --std=gnu99 -c constants/constants.c
   gcc --std=gnu99 -c ioHandlerMethods/ioHandlerMethods.c
+  gcc --std=gnu99 -c subProcessHandlers/subProcessHandlers.c
 
   # Creates archive with objects
-  ar -r ${preCompilePackage}.a constants.o ioHandlerMethods.o
+  ar -r ${preCompilePackage}.a constants.o ioHandlerMethods.o subProcessHandlers.o
 }
 
 # Compiles main

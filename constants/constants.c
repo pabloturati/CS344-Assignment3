@@ -2,5 +2,3 @@
 #include <stdlib.h>
 #include <string.h>
 #include "constants.h"
-
-char *promptStart = ": ";

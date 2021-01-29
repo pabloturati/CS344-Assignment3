@@ -5,9 +5,9 @@
 #include "../constants/constants.h"
 
 /* 
-Prompts user for command and returns a variable length string with the user input
-Input: optionPromptMessage (string), menuList (string)
-Output: option (integer)
+Takes in a raw string and divides into tokens. Returns array of tokens. 
+Input: inputLine (string *)
+Output: tokens (array of strings);
 Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Parsing a line"
 */
 char **splitInputCommand(char *inputLine)
@@ -53,7 +53,7 @@ Input: void
 Output: string - Contains user input line
 Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Reading a line"
 */
-char *promptForCommand()
+char *readCommandline()
 {
   // Assumes initial size of the user input (will adjust if necessary)
   int currMax = COMMAND_MEMORY_SIZE;
@@ -62,8 +62,6 @@ char *promptForCommand()
 
   int pos = 0;
   int currChar;
-
-  printf("%s", promptStart);
 
   while (TRUE)
   {
@@ -89,3 +87,33 @@ char *promptForCommand()
     }
   }
 }
+
+/* 
+Handles input prompt request. Returns array of separate commands. 
+Input: void
+Output: tokens (array of strings);
+Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Reading a line"
+*/
+char **requestAndTokenizeInput()
+{
+  printf("%s", PROMPT_STR);
+  char *inputLine = readCommandline();
+  char **tokens = splitInputCommand(inputLine);
+  free(inputLine);
+  return tokens;
+}
+
+/* USE TO debug
+
+printf("variable length command is: %s\n\n", inputLine);
+
+    char *curr = tokens[i];
+    while (curr != NULL)
+    {
+      printf("Token %d is %s\n", i, curr);
+      ++i;
+      curr = tokens[i];
+    }
+    free(tokens);
+
+*/
