@@ -1,4 +1,4 @@
-# CS344-Assignment2
+# CS344-Assignment3
 CS344-Assignment 3 smallsh\
 Author: Pablo Turati - turatip@oregonstate.edu\
 Licence: MIT. Refer to `LICENSE` for details.
