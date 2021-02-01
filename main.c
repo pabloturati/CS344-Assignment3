@@ -9,8 +9,8 @@ int main()
   do
   {
     char **tokens = requestAndTokenizeInput();
-    free(tokens);
 
+    free(tokens);
   } while (TRUE);
   return 0;
 }

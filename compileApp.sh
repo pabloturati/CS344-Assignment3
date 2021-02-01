@@ -6,7 +6,12 @@ executableFilename="smallsh"
 mainFilename="main.c"
 
 # Components
-ioHandlerMethods="ioHandlerMethods"
+declare -a componentList=(
+  "constants"
+  "ioHandlerMethods"
+  "subProcessHandlers"
+  "builtinFunctions"
+)
 
 # Cleans previously compiled files and created folders
 function preCompileClean() {
@@ -18,14 +23,22 @@ function postCompileClean() {
   rm -f *.o *.a
 }
 
+function generatePrecompiledObject() {
+  gcc --std=gnu99 -c ${1}/${1}.c
+}
+
 function generateModuleObjectsAndArchive() {
-  # Create precompiled objects
-  gcc --std=gnu99 -c constants/constants.c
-  gcc --std=gnu99 -c ioHandlerMethods/ioHandlerMethods.c
-  gcc --std=gnu99 -c subProcessHandlers/subProcessHandlers.c
+  # Stores object list
+  precompileObjectList=""
+
+  # Create precompiled objects and list
+  for component in ${componentList[@]}; do
+    precompileObjectList+=" ${component}.o"
+    generatePrecompiledObject $component
+  done
 
   # Creates archive with objects
-  ar -r ${preCompilePackage}.a constants.o ioHandlerMethods.o subProcessHandlers.o
+  ar -r ${preCompilePackage}.a $precompileObjectList
 }
 
 # Compiles main
@@ -45,11 +58,15 @@ function main() {
   postCompileClean
 
   # Handles parameters to execute.
-  # Param e -> triggers executable
+  # Param triggers:
+  #  e -> run executable
+  #  v -> run executable with valgrind leak analysis
+  #  t -> run executable with testscript
   while getopts "ev" flag; do
     case $flag in
     e) ./$executableFilename ;;
     v) valgrind ./$executableFilename ;;
+    t) ./p3testscript 2>&1 ;;
     esac
     shift
   done
