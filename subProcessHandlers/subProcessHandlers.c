@@ -45,7 +45,7 @@ Reference: parts of code adapted from example 4_2_execv_fork_ls
 int executeCommand(char **args)
 {
 
-  if (args[0] == NULL || isAComment(args[0]))
+  if (isAnEmptyLineOrComment(args))
   {
     return EXIT_FAILURE;
   }

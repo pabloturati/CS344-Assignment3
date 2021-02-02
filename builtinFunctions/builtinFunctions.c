@@ -54,8 +54,7 @@ int helpCommand(char **args)
   return 0;
 }
 
-int isAComment(char *arg)
+int isAnEmptyLineOrComment(char **args)
 {
-  int test = strncmp(arg, "#", 1);
-  return strncmp(arg, "#", 1) == 0;
+  return args[0] == NULL || strncmp(args[0], COMMENT_SIMBOL, 1) == 0;
 }

@@ -6,6 +6,7 @@
 #define TOKEN_ARR_SIZE 64
 #define TOKEN_DELIMETERS " \t\r\n\a"
 #define PROMPT_STR ": "
+#define COMMENT_SIMBOL "#"
 
 const char *TOO_FEW_ARGUMENT_MSG;
 
