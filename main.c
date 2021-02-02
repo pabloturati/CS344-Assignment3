@@ -3,13 +3,14 @@
 #include <string.h>
 #include "constants/constants.h"
 #include "ioHandlerMethods/ioHandlerMethods.h"
+#include "builtinFunctions/builtinFunctions.h"
 
 int main()
 {
   do
   {
     char **tokens = requestAndTokenizeInput();
-
+    executeCommand(tokens);
     free(tokens);
   } while (TRUE);
   return 0;

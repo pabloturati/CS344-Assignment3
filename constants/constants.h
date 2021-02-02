@@ -7,4 +7,6 @@
 #define TOKEN_DELIMETERS " \t\r\n\a"
 #define PROMPT_STR ": "
 
+const char *TOO_FEW_ARGUMENT_MSG;
+
 #endif

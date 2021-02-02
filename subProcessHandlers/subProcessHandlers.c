@@ -1,8 +1,9 @@
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include "../builtinFunctions/builtinFunctions.h"
 
 /* 
 Launches a child process using the passed arguments  
@@ -10,7 +11,6 @@ Input: args (list of strings)
 Output: 0 in case of success, otherwise error code > 0
 Reference: parts of code adapted from example 4_2_execv_fork_ls
 */
-
 int launchSubProcess(char **args)
 {
   int childProcessStatus;
@@ -33,4 +33,31 @@ int launchSubProcess(char **args)
     printf("Parent(%d): Child(%d) terminated", getpid(), spawnPid);
   }
   return 0;
+}
+
+/* 
+Executes a builtin shell command or defers the request to a child subprocess 
+Input: args (list of strings)
+Output: 0 in case of success, otherwise error code > 0
+Reference: parts of code adapted from example 4_2_execv_fork_ls 
+"Putting together bultin and processes"
+*/
+int executeCommand(char **args)
+{
+
+  if (args[0] == NULL || isAComment(args[0]))
+  {
+    return EXIT_FAILURE;
+  }
+  // Search for the command in the list of builtins
+  for (int i = 0; i < commandFuncArrLength(); i++)
+  {
+    if (strcmp(args[0], SHELL_COMMANDS[i]) == 0)
+      return (*shellCommandFunctions)(args);
+  }
+
+  // If not found in the builtin commands, execute a subprocess
+  // return launchSubProcess(args);
+  printf("\nGoing to sub process\n");
+  return EXIT_SUCCESS;
 }
