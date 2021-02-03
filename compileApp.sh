@@ -62,7 +62,7 @@ function main() {
   #  e -> run executable
   #  v -> run executable with valgrind leak analysis
   #  t -> run executable with testscript
-  while getopts "ev" flag; do
+  while getopts "evt" flag; do
     case $flag in
     e) ./$executableFilename ;;
     v) valgrind ./$executableFilename ;;
