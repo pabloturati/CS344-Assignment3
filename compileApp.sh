@@ -38,7 +38,7 @@ function generateModuleObjectsAndArchive() {
   done
 
   # Creates archive with objects
-  ar -r ${preCompilePackage}.a $precompileObjectList
+  ar -r ${preCompilePackage}.a $precompileObjectList 2>1
 }
 
 # Compiles main
