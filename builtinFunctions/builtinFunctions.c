@@ -6,8 +6,6 @@
 #include "../subProcessHandlers/subProcessHandlers.h"
 #include "builtinFunctions.h"
 
-// Exit, cd, status, $$, handle blank spaces and comments
-
 /* 
 Creates an array of identifiers linked to functions to handle the shell built-in 
 commands by matching the command and referencing the function index
@@ -29,10 +27,10 @@ int commandFuncArrLength()
 
 int cdCommand(char **args)
 {
+  // If cd is called without arguments, changes directory to HOME env var
   if (args[1] == NULL)
   {
-    fprintf(stderr, "%s", TOO_FEW_ARGUMENT_MSG);
-    return EXIT_FAILURE;
+    args[1] = getenv("HOME");
   }
   if (chdir(args[1]) != EXIT_SUCCESS)
   {
@@ -45,7 +43,7 @@ int cdCommand(char **args)
 int exitCommand(char **args)
 {
   exit(EXIT_SUCCESS);
-  return 0;
+  return getStatus();
 }
 
 int helpCommand(char **args)
