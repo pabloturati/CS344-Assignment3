@@ -11,5 +11,7 @@
 #define PROCESS_ID_VARIABLE "$$"
 
 const char *TOO_FEW_ARGUMENT_MSG;
+void setStatus(int);
+int getStatus();
 
 #endif

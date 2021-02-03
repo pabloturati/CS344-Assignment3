@@ -44,14 +44,15 @@ int cdCommand(char **args)
 
 int exitCommand(char **args)
 {
-  printf("Exit command");
+  exit(EXIT_SUCCESS);
   return 0;
 }
 
 int helpCommand(char **args)
 {
-  printf("Help command\n");
-  return 0;
+  int status = getStatus();
+  printf("%d\n", status);
+  return status;
 }
 
 int isAnEmptyLineOrComment(char **args)

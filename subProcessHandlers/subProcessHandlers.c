@@ -55,7 +55,7 @@ int executeCommand(char **args)
   for (int i = 0; i < commandFuncArrLength(); i++)
   {
     if (strcmp(args[0], SHELL_COMMANDS[i]) == 0)
-      return (*shellCommandFunctions)(args);
+      return (*shellCommandFunctions[i])(args);
   }
 
   // If not found in the builtin commands, execute a subprocess

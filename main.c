@@ -10,7 +10,7 @@ int main()
   do
   {
     char **tokens = requestAndTokenizeInput();
-    executeCommand(tokens);
+    setStatus(executeCommand(tokens));
     free(tokens);
   } while (TRUE);
   return 0;
