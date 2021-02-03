@@ -55,11 +55,8 @@ dkms.conf
 .vscode
 .prettierignore
 
-# Test data
-movies_sample_1.csv
-
 # Compiled files
-movies_by_year
+smallsh
 
 # Markdown outputs
 README.jpeg
