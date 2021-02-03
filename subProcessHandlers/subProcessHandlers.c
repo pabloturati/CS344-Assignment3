@@ -70,7 +70,7 @@ Output: (string *)
 char *expandProcessVar(char *str, int processId)
 {
   char *ptr = strstr(str, PROCESS_ID_VARIABLE);
-  //Return if there is no process id variable
+  //Return if there is no process id variable. Recursive base case
   if (!ptr)
     return str;
 
@@ -95,7 +95,9 @@ char *expandProcessVar(char *str, int processId)
 
   sprintf(buffer + indexOfProcessVar, "%d%s", processId, bufferEnd);
   free(bufferEnd);
-  return buffer;
+
+  // Recursive call in case of other variable expansions
+  return expandProcessVar(buffer, processId);
 }
 
 int getShellProcessId()
