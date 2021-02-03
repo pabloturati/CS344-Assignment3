@@ -13,7 +13,7 @@ Creates an array of identifiers linked to functions to handle the shell built-in
 commands by matching the command and referencing the function index
 Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Shell Builtins"
 */
-char *SHELL_COMMANDS[] = {"cd", "exit", "help"};
+char *SHELL_COMMANDS[] = {"cd", "exit", "status"};
 
 // Array of shell command functions, allows for execution based on array index
 int (*shellCommandFunctions[])(char **) = {

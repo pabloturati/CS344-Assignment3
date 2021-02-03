@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include "../constants/constants.h"
+#include "../subProcessHandlers/subProcessHandlers.h"
 
 /* 
 Takes in a raw string and divides into tokens. Returns array of tokens. 
@@ -26,9 +27,12 @@ char **splitInputCommand(char *inputLine)
   // Gets first token. Returns NULL if none.
   curToken = strtok(inputLine, TOKEN_DELIMETERS);
 
+  // Gets current process Id
+  int processId = getShellProcessId();
+
   while (curToken != NULL)
   {
-    tokens[pos] = curToken;
+    tokens[pos] = expandProcessVar(curToken, processId);
     ++pos;
 
     // If maximum number of tokens are passed, increase memory allocation
@@ -102,18 +106,3 @@ char **requestAndTokenizeInput()
   free(inputLine);
   return tokens;
 }
-
-/* USE TO debug
-
-printf("variable length command is: %s\n\n", inputLine);
-
-    char *curr = tokens[i];
-    while (curr != NULL)
-    {
-      printf("Token %d is %s\n", i, curr);
-      ++i;
-      curr = tokens[i];
-    }
-    free(tokens);
-
-*/

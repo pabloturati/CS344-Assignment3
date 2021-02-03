@@ -2,6 +2,8 @@
 #define SUBPROCESSHANDLERS_H
 
 int launchSubProcess(char **);
-int executeCommand(char **args);
+int executeCommand(char **);
+char *expandProcessVar(char *, int);
+int getShellProcessId();
 
 #endif

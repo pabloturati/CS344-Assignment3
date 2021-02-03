@@ -7,6 +7,8 @@
 #define TOKEN_DELIMETERS " \t\r\n\a"
 #define PROMPT_STR ": "
 #define COMMENT_SIMBOL "#"
+#define VAR_EXPANSION_BUFF_SIZE 1024
+#define PROCESS_ID_VARIABLE "$$"
 
 const char *TOO_FEW_ARGUMENT_MSG;
 
