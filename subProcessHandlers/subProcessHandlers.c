@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <signal.h>
 #include "../constants/constants.h"
 #include "../builtinFunctions/builtinFunctions.h"
 
@@ -14,27 +15,26 @@ Reference: parts of code adapted from example 4_2_execv_fork_ls
 */
 int launchSubProcess(char **args)
 {
-  int childProcessStatus;
+  int childProcessStatus = 0;
   pid_t spawnPid = fork();
-
   switch (spawnPid)
   {
   case -1: // In case of Fork error
     perror("fork()\n");
     return 1;
-  case 0: // Child process
-    printf("Child(%d) is running command\n", getpid());
+  case 0:
+    // Execute command
     execvp(args[0], args);
     // exec only returns if there is an error
     perror("exec_error");
+    //Terminates the child process on error
+    kill(getpid(), SIGTERM);
     return 2;
   default:
     // Parent execution. Waits for child to complete.
-    printf("marker here\n");
-    spawnPid = waitpid(spawnPid, &childProcessStatus, 0);
-    printf("Parent(%d): Child(%d) terminated\n", getpid(), spawnPid);
+    waitpid(spawnPid, &childProcessStatus, 0);
   }
-  return 0;
+  return childProcessStatus > 0;
 }
 
 /* 
@@ -46,7 +46,6 @@ Reference: parts of code adapted from example 4_2_execv_fork_ls
 */
 int executeCommand(char **args)
 {
-
   if (isAnEmptyLineOrComment(args))
   {
     return EXIT_FAILURE;
