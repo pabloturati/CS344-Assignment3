@@ -30,7 +30,7 @@ int cdCommand(char **args)
   // If cd is called without arguments, changes directory to HOME env var
   if (args[1] == NULL)
   {
-    args[1] = getenv("HOME");
+    args[1] = getenv(HOME_ENV_VAR);
   }
   if (chdir(args[1]) != EXIT_SUCCESS)
   {

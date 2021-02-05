@@ -13,11 +13,21 @@
 #define RED_IN_SYM "<"
 #define OUT_FILE_PERMISSION 0644
 #define KILL_PROCESS_RETURN_VAL 2
+#define HOME_ENV_VAR "HOME"
 
 const char *TOO_FEW_ARGUMENT_MSG;
+const char *EXEC_ERROR_MSG_LABEL;
+const char *MISSING_PARAM_ERROR_MSG_LABEL;
+const char *OPEN_READ_FILE_ERROR_MSG_LABEL;
+const char *OPEN_WRITE_FILE_ERROR_MSG_LABEL;
+
 void setStatus(int);
 int getStatus();
 int killChildProcess();
 int getShellProcessId();
+void reportErrorAndFlushStdOut(const char *);
+int openFileForReading(char *);
+int hasNoMoreArgumentsAfterCurrent(char *);
+int openFileForWriting(char *);
 
 #endif

@@ -43,18 +43,12 @@ int launchSubProcess(char **args)
       // Execute command
       execvp(args[0], args);
       // exec returns only if there is an error. Flush stdout and redirect to screen.
-      perror("exec_error");
+      perror(EXEC_ERROR_MSG_LABEL);
       fflush(stdout);
-      // terminates the child process on error
-      return killChildProcess();
     }
-    else
-    {
-      return killChildProcess();
-    }
+    return killChildProcess();
   default:
     // Parent execution. Waits for child to complete.
-    // printf("Parent\n");
     waitpid(spawnPid, &childProcessStatus, 0);
   }
   return childProcessStatus > 0;
@@ -69,59 +63,43 @@ Reference: parts of code adapted from example 4_2_execv_fork_ls
 */
 int adjustProcessStreams(char **args)
 {
-  // printf("starting a new command %s\n", args[0]);
   //LOOP thru the args
   int i = 0;
-  int inputRedirectSuccess = 0;
-  int outputRedirectSuccess = 0;
+  int inputRedirectStatus = 0;
+  int outputRedirectStatus = 0;
 
   while (args[i] != NULL)
   {
     // If it finds input redirect symbol <, substitute key for NULL.
     if (strncmp(RED_IN_SYM, args[i], 1) == 0)
     {
-      if (!args[i + 1])
-      {
-        perror("missing param");
-        fflush(stdout);
+      char *nextVal = args[i + 1];
+      if (hasNoMoreArgumentsAfterCurrent(nextVal))
         return 1;
-      }
       args[i] = NULL;
-      // Take the index + 1 as sourcefile and redirect to 0
-      int sourceFile = open(args[i + 1], O_RDONLY);
-      if (sourceFile == -1)
-      {
-        perror("source open()");
-        fflush(stdout);
+      // Take the next as sourcefile and redirect to 0
+      int filePtr = openFileForReading(nextVal);
+      if (filePtr == -1)
         return 1;
-      }
-      //Redirect stdin to sourcefile
-      inputRedirectSuccess = dup2(sourceFile, 0);
+      inputRedirectStatus = dup2(filePtr, 0);
     }
     //If it finds output redirect symbol >, substitute key for NULL
     else if (strncmp(RED_OUT_SYM, args[i], 1) == 0)
     {
-      if (!args[i + 1])
-      {
-        perror("missing param");
-        fflush(stdout);
+      char *nextVal = args[i + 1];
+      if (hasNoMoreArgumentsAfterCurrent(nextVal))
         return 1;
-      }
       args[i] = NULL;
-      //Take the index + 1 as destinationfile and redirect to 1
-      int destinationFile = open(args[i + 1], O_WRONLY | O_CREAT | O_TRUNC, OUT_FILE_PERMISSION);
-      if (destinationFile == -1)
-      {
-        perror("target open()");
-        fflush(stdout);
+      //Take the next as destinationfile and redirect to 1
+      int filePtr = openFileForWriting(nextVal);
+      if (filePtr == -1)
         return 1;
-      }
       //Redirect stdout to destinationFile
-      outputRedirectSuccess = dup2(destinationFile, 1);
+      outputRedirectStatus = dup2(filePtr, 1);
     }
     ++i;
   }
-  return 0;
+  return inputRedirectStatus && outputRedirectStatus == 0;
 }
 
 /* 
