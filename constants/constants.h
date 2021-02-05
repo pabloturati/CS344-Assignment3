@@ -17,5 +17,7 @@
 const char *TOO_FEW_ARGUMENT_MSG;
 void setStatus(int);
 int getStatus();
+int killChildProcess();
+int getShellProcessId();
 
 #endif

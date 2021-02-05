@@ -4,7 +4,6 @@
 int launchSubProcess(char **);
 int executeCommand(char **);
 char *expandProcessVar(char *, int);
-int getShellProcessId();
 int adjustProcessStreams(char **);
 
 #endif

@@ -46,11 +46,11 @@ int launchSubProcess(char **args)
       perror("exec_error");
       fflush(stdout);
       // terminates the child process on error
-      return killProcess();
+      return killChildProcess();
     }
     else
     {
-      return killProcess();
+      return killChildProcess();
     }
   default:
     // Parent execution. Waits for child to complete.
@@ -58,12 +58,6 @@ int launchSubProcess(char **args)
     waitpid(spawnPid, &childProcessStatus, 0);
   }
   return childProcessStatus > 0;
-}
-
-int killProcess()
-{
-  kill(getpid(), SIGTERM);
-  return KILL_PROCESS_RETURN_VAL;
 }
 
 /*
@@ -190,9 +184,4 @@ char *expandProcessVar(char *str, int processId)
 
   // Recursive call in case of other variable expansions
   return expandProcessVar(buffer, processId);
-}
-
-int getShellProcessId()
-{
-  return getpid();
 }
