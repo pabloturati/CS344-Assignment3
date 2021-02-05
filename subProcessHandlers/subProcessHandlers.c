@@ -62,16 +62,14 @@ Output: 0 in case of success, otherwise error code > 0
 */
 int adjustProcessStreams(char **args)
 {
-  int i = 0;
-  int inputRedirectStatus = 0;
-  int outputRedirectStatus = 0;
+  int i = 0, inputRedirectStatus = 0, outputRedirectStatus = 0;
 
   while (args[i] != NULL)
   {
     // If it finds input redirect symbol <, substitute for NULL and redirect stdin.
     if (strncmp(RED_IN_SYM, args[i], 1) == 0)
     {
-      inputRedirectStatus = handleRedirectFlow(args, i, INPUT_OPERATION);
+      inputRedirectStatus = handleRedirectFlow(args, i, INPUT_OPERATION, openFileForReading);
       // Quit on error
       if (inputRedirectStatus > 0)
         return 1;
@@ -79,7 +77,8 @@ int adjustProcessStreams(char **args)
     //If it finds output redirect symbol >, substitute for NULL and redirect stdout.
     else if (strncmp(RED_OUT_SYM, args[i], 1) == 0)
     {
-      outputRedirectStatus = handleRedirectFlow(args, i, OUTPUT_OPERATION);
+
+      outputRedirectStatus = handleRedirectFlow(args, i, OUTPUT_OPERATION, openFileForWriting);
       // Quit on error
       if (outputRedirectStatus > 0)
         return 1;

@@ -22,6 +22,7 @@ const char *EXEC_ERROR_MSG_LABEL;
 const char *MISSING_PARAM_ERROR_MSG_LABEL;
 const char *OPEN_READ_FILE_ERROR_MSG_LABEL;
 const char *OPEN_WRITE_FILE_ERROR_MSG_LABEL;
+const char *REDIRECT_ERROR_MSG_LABEL;
 
 void setStatus(int);
 int getStatus();
@@ -31,6 +32,6 @@ void reportErrorAndFlushStdOut(const char *);
 int openFileForReading(char *);
 int hasNoMoreArgumentsAfterCurrent(char *);
 int openFileForWriting(char *);
-int handleRedirectFlow(char **args, int pos, int operationType);
+int handleRedirectFlow(char **args, int pos, int operationType, int (*)(char *));
 
 #endif

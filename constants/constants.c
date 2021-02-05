@@ -7,10 +7,11 @@
 #include "constants.h"
 
 const char *TOO_FEW_ARGUMENT_MSG = "smallsh: Unable to execute, too few arguments\n";
-const char *EXEC_ERROR_MSG_LABEL = "exec_error";
+const char *EXEC_ERROR_MSG_LABEL = "exec_error()";
 const char *MISSING_PARAM_ERROR_MSG_LABEL = "missing_param";
 const char *OPEN_READ_FILE_ERROR_MSG_LABEL = "source open()";
 const char *OPEN_WRITE_FILE_ERROR_MSG_LABEL = "target open()";
+const char *REDIRECT_ERROR_MSG_LABEL = "target dup2()";
 
 /*********** Global status and accessors ***********/
 
@@ -91,10 +92,10 @@ Output: file descriptor (integer)
 */
 int openFileForWriting(char *fileStr)
 {
-  int destinationFile = open(fileStr, O_WRONLY | O_CREAT | O_TRUNC, OUT_FILE_PERMISSION);
-  if (destinationFile == -1)
+  int destinationFileDescriptor = open(fileStr, O_WRONLY | O_CREAT | O_TRUNC, OUT_FILE_PERMISSION);
+  if (destinationFileDescriptor == -1)
     reportErrorAndFlushStdOut(OPEN_WRITE_FILE_ERROR_MSG_LABEL);
-  return destinationFile;
+  return destinationFileDescriptor;
 }
 
 int hasNoMoreArgumentsAfterCurrent(char *nextVal)
@@ -113,19 +114,23 @@ process flow.
 Input:  args - List of commands (by reference)
         pos - Current position (integer)
         operationType - 0 for input / 1 for output (integer)
+        openFileHandler (function) - Function to handle the file opening (i.e. reading or writing)
 Output: currentProcessId()
 */
-int handleRedirectFlow(char **args, int pos, int operationType)
+int handleRedirectFlow(char **args, int pos, int operationType, int (*openFileHandler)(char *))
 {
   char *nextVal = args[pos + 1];
   if (hasNoMoreArgumentsAfterCurrent(nextVal))
     return 1;
-  //Place a NULL pointer where the redirect character is to avoid execution from there
   args[pos] = NULL;
-  int filePtr = operationType == INPUT_OPERATION
-                    ? openFileForReading(nextVal)
-                    : openFileForWriting(nextVal);
+  int filePtr = openFileHandler(nextVal);
   if (filePtr == -1)
     return 1;
-  return dup2(filePtr, operationType);
+  int result = dup2(filePtr, operationType);
+  if (result == -1)
+  {
+    perror(REDIRECT_ERROR_MSG_LABEL);
+    return 2;
+  }
+  return 0;
 }
