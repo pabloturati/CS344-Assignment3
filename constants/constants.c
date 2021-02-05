@@ -60,20 +60,35 @@ int getShellProcessId()
   return getpid();
 }
 
+/*
+Prints error message and flushes stdout
+Input: void
+Output: Prints message to stdout
+*/
 void reportErrorAndFlushStdOut(const char *errorMsg)
 {
   perror(errorMsg);
   fflush(stdout);
 }
 
+/*
+Opens a file for reading and returns file pointer.
+Input: fileStr (string)
+Output: file descriptor (integer)
+*/
 int openFileForReading(char *fileStr)
 {
-  int sourceFile = open(fileStr, O_RDONLY);
-  if (sourceFile == -1)
+  int sourceFileDescriptor = open(fileStr, O_RDONLY);
+  if (sourceFileDescriptor == -1)
     reportErrorAndFlushStdOut(OPEN_READ_FILE_ERROR_MSG_LABEL);
-  return sourceFile;
+  return sourceFileDescriptor;
 }
 
+/*
+Opens a file for writing and returns file pointer.
+Input: fileStr (string)
+Output: file descriptor (integer)
+*/
 int openFileForWriting(char *fileStr)
 {
   int destinationFile = open(fileStr, O_WRONLY | O_CREAT | O_TRUNC, OUT_FILE_PERMISSION);
@@ -92,14 +107,25 @@ int hasNoMoreArgumentsAfterCurrent(char *nextVal)
   return FALSE;
 }
 
-// int handleRedirectFlow(char **args, int pos, )
-// {
-//   char *nextVal = args[pos + 1];
-//   if (hasNoMoreArgumentsAfterCurrent(nextVal))
-//     return 1;
-//   args[pos] = NULL;
-//   int filePtr = openFileForReading(nextVal);
-//   if (filePtr == -1)
-//     return 1;
-//   return dup2(filePtr, 0);
-// }
+/*
+Function to open a file for reading or writing and redirect.
+process flow.
+Input:  args - List of commands (by reference)
+        pos - Current position (integer)
+        operationType - 0 for input / 1 for output (integer)
+Output: currentProcessId()
+*/
+int handleRedirectFlow(char **args, int pos, int operationType)
+{
+  char *nextVal = args[pos + 1];
+  if (hasNoMoreArgumentsAfterCurrent(nextVal))
+    return 1;
+  //Place a NULL pointer where the redirect character is to avoid execution from there
+  args[pos] = NULL;
+  int filePtr = operationType == INPUT_OPERATION
+                    ? openFileForReading(nextVal)
+                    : openFileForWriting(nextVal);
+  if (filePtr == -1)
+    return 1;
+  return dup2(filePtr, operationType);
+}

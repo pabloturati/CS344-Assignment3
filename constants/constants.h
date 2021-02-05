@@ -14,6 +14,8 @@
 #define OUT_FILE_PERMISSION 0644
 #define KILL_PROCESS_RETURN_VAL 2
 #define HOME_ENV_VAR "HOME"
+#define INPUT_OPERATION 0
+#define OUTPUT_OPERATION 1
 
 const char *TOO_FEW_ARGUMENT_MSG;
 const char *EXEC_ERROR_MSG_LABEL;
@@ -29,5 +31,6 @@ void reportErrorAndFlushStdOut(const char *);
 int openFileForReading(char *);
 int hasNoMoreArgumentsAfterCurrent(char *);
 int openFileForWriting(char *);
+int handleRedirectFlow(char **args, int pos, int operationType);
 
 #endif

@@ -55,47 +55,34 @@ int launchSubProcess(char **args)
 }
 
 /*
-Process input streams
+Traverses command list searching for input or output redirection commands
+If input or output redirection found, cuts command list and redirects accordingly
 Input: args (list of strings)
 Output: 0 in case of success, otherwise error code > 0
-Reference: parts of code adapted from example 4_2_execv_fork_ls
-"Putting together bultin and processes"
 */
 int adjustProcessStreams(char **args)
 {
-  //LOOP thru the args
   int i = 0;
   int inputRedirectStatus = 0;
   int outputRedirectStatus = 0;
 
   while (args[i] != NULL)
   {
-    // If it finds input redirect symbol <, substitute key for NULL.
+    // If it finds input redirect symbol <, substitute for NULL and redirect stdin.
     if (strncmp(RED_IN_SYM, args[i], 1) == 0)
     {
-      char *nextVal = args[i + 1];
-      if (hasNoMoreArgumentsAfterCurrent(nextVal))
+      inputRedirectStatus = handleRedirectFlow(args, i, INPUT_OPERATION);
+      // Quit on error
+      if (inputRedirectStatus > 0)
         return 1;
-      args[i] = NULL;
-      // Take the next as sourcefile and redirect to 0
-      int filePtr = openFileForReading(nextVal);
-      if (filePtr == -1)
-        return 1;
-      inputRedirectStatus = dup2(filePtr, 0);
     }
-    //If it finds output redirect symbol >, substitute key for NULL
+    //If it finds output redirect symbol >, substitute for NULL and redirect stdout.
     else if (strncmp(RED_OUT_SYM, args[i], 1) == 0)
     {
-      char *nextVal = args[i + 1];
-      if (hasNoMoreArgumentsAfterCurrent(nextVal))
+      outputRedirectStatus = handleRedirectFlow(args, i, OUTPUT_OPERATION);
+      // Quit on error
+      if (outputRedirectStatus > 0)
         return 1;
-      args[i] = NULL;
-      //Take the next as destinationfile and redirect to 1
-      int filePtr = openFileForWriting(nextVal);
-      if (filePtr == -1)
-        return 1;
-      //Redirect stdout to destinationFile
-      outputRedirectStatus = dup2(filePtr, 1);
     }
     ++i;
   }
