@@ -9,6 +9,10 @@
 #define COMMENT_SIMBOL "#"
 #define VAR_EXPANSION_BUFF_SIZE 1024
 #define PROCESS_ID_VARIABLE "$$"
+#define RED_OUT_SYM ">"
+#define RED_IN_SYM "<"
+#define OUT_FILE_PERMISSION 0644
+#define KILL_PROCESS_RETURN_VAL 2
 
 const char *TOO_FEW_ARGUMENT_MSG;
 void setStatus(int);

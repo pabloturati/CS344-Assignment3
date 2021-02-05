@@ -4,6 +4,7 @@
 preCompilePackage="component_archive"
 executableFilename="smallsh"
 mainFilename="main.c"
+testOutputFiles="*.o *.a junk* mytestresults mytestresults myModifiedTestresults"
 
 # Components
 declare -a componentList=(
@@ -15,7 +16,7 @@ declare -a componentList=(
 
 # Cleans previously compiled files and created folders
 function preCompileClean() {
-  rm -rf $executableFilename *.o *.a
+  rm -rf $executableFilename *.o *.a $testOutputFiles
 }
 
 # Cleans space of temporary compile files
@@ -62,11 +63,13 @@ function main() {
   #  e -> run executable
   #  v -> run executable with valgrind leak analysis
   #  t -> run executable with testscript
-  while getopts "evt" flag; do
+  while getopts "evtrm" flag; do
     case $flag in
     e) ./$executableFilename ;;
     v) valgrind ./$executableFilename ;;
     t) ./p3testscript 2>&1 ;;
+    r) ./p3testscript >mytestresults 2>&1 ;;
+    m) ./modifiedTestScript >myModifiedTestresults 2>&1 ;;
     esac
     shift
   done

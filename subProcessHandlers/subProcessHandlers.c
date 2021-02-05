@@ -4,8 +4,22 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
 #include "../constants/constants.h"
 #include "../builtinFunctions/builtinFunctions.h"
+#include "subProcessHandlers.h"
+
+void printArgs(char **args, char *message)
+{
+  printf("%s\n", message);
+  int i = 0;
+  printf("%s\n", args[0]);
+  while (args[i] != NULL)
+  {
+    printf("%s\n", args[i]);
+    ++i;
+  }
+}
 
 /* 
 Launches a child process using the passed arguments  
@@ -16,25 +30,104 @@ Reference: parts of code adapted from example 4_2_execv_fork_ls
 int launchSubProcess(char **args)
 {
   int childProcessStatus = 0;
+
   pid_t spawnPid = fork();
   switch (spawnPid)
   {
   case -1: // In case of Fork error
     perror("fork()\n");
     return 1;
-  case 0:
-    // Execute command
-    execvp(args[0], args);
-    // exec only returns if there is an error
-    perror("exec_error");
-    //Terminates the child process on error
-    kill(getpid(), SIGTERM);
-    return 2;
+  case 0: // Child process
+    if (adjustProcessStreams(args) == 0)
+    {
+      // Execute command
+      execvp(args[0], args);
+      // exec returns only if there is an error. Flush stdout and redirect to screen.
+      perror("exec_error");
+      fflush(stdout);
+      // terminates the child process on error
+      return killProcess();
+    }
+    else
+    {
+      return killProcess();
+    }
   default:
     // Parent execution. Waits for child to complete.
+    // printf("Parent\n");
     waitpid(spawnPid, &childProcessStatus, 0);
   }
   return childProcessStatus > 0;
+}
+
+int killProcess()
+{
+  kill(getpid(), SIGTERM);
+  return KILL_PROCESS_RETURN_VAL;
+}
+
+/*
+Process input streams
+Input: args (list of strings)
+Output: 0 in case of success, otherwise error code > 0
+Reference: parts of code adapted from example 4_2_execv_fork_ls
+"Putting together bultin and processes"
+*/
+int adjustProcessStreams(char **args)
+{
+  // printf("starting a new command %s\n", args[0]);
+  //LOOP thru the args
+  int i = 0;
+  int inputRedirectSuccess = 0;
+  int outputRedirectSuccess = 0;
+
+  while (args[i] != NULL)
+  {
+    // If it finds input redirect symbol <, substitute key for NULL.
+    if (strncmp(RED_IN_SYM, args[i], 1) == 0)
+    {
+      if (!args[i + 1])
+      {
+        perror("missing param");
+        fflush(stdout);
+        return 1;
+      }
+      args[i] = NULL;
+      // Take the index + 1 as sourcefile and redirect to 0
+      int sourceFile = open(args[i + 1], O_RDONLY);
+      if (sourceFile == -1)
+      {
+        perror("source open()");
+        fflush(stdout);
+        return 1;
+      }
+      //Redirect stdin to sourcefile
+      inputRedirectSuccess = dup2(sourceFile, 0);
+    }
+    //If it finds output redirect symbol >, substitute key for NULL
+    else if (strncmp(RED_OUT_SYM, args[i], 1) == 0)
+    {
+      if (!args[i + 1])
+      {
+        perror("missing param");
+        fflush(stdout);
+        return 1;
+      }
+      args[i] = NULL;
+      //Take the index + 1 as destinationfile and redirect to 1
+      int destinationFile = open(args[i + 1], O_WRONLY | O_CREAT | O_TRUNC, OUT_FILE_PERMISSION);
+      if (destinationFile == -1)
+      {
+        perror("target open()");
+        fflush(stdout);
+        return 1;
+      }
+      //Redirect stdout to destinationFile
+      outputRedirectSuccess = dup2(destinationFile, 1);
+    }
+    ++i;
+  }
+  return 0;
 }
 
 /* 
