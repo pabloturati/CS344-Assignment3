@@ -6,12 +6,27 @@
 #include <fcntl.h>
 #include "constants.h"
 
+/*********** User interaction messages ***********/
+
 const char *TOO_FEW_ARGUMENT_MSG = "smallsh: Unable to execute, too few arguments\n";
 const char *EXEC_ERROR_MSG_LABEL = "exec_error()";
 const char *MISSING_PARAM_ERROR_MSG_LABEL = "missing_param";
 const char *OPEN_READ_FILE_ERROR_MSG_LABEL = "source open()";
 const char *OPEN_WRITE_FILE_ERROR_MSG_LABEL = "target open()";
 const char *REDIRECT_ERROR_MSG_LABEL = "target dup2()";
+const char *COMMAND_PARSE_ERROR_MSG = "command_error()";
+
+/*********** Command Structure ***********/
+
+void resetCommandInstanceAndArray(struct ShCommand *currCommand, char **commandsArr)
+{
+  // Reset struct values
+  currCommand->path = NULL;
+  currCommand->args = NULL;
+  currCommand->outRedirFile = NULL;
+  currCommand->inRedirFile = NULL;
+  currCommand->isBackgroundProcess = FALSE;
+}
 
 /*********** Global status and accessors ***********/
 
@@ -37,7 +52,34 @@ void setStatus(int newStatus)
   status = newStatus;
 }
 
-/*********** Process helper methods ***********/
+/*********** General helper methods ***********/
+
+/*
+Method to match strings.
+Input: str1, str2 -> strings to compare
+Output: returns TRUE (1) if strings are equal, else FALSE (0)
+*/
+int stringEquals(char *str1, char *str2)
+{
+  return strncmp(str1, str2, 1) == 0;
+}
+
+/* Methods to abstract symbol analysis. */
+/* Bools. Return 1 for TRUE */
+int isRedirectInputSymbol(char *commandStr)
+{
+  return stringEquals(REDIRECT_INPUT_SYMBOL, commandStr);
+}
+int isRedirectOutputSymbol(char *commandStr)
+{
+  return stringEquals(REDIRECT_OUTPUT_SYMBOL, commandStr);
+}
+int isRunProcessOnBackgroundSymbol(char *commandStr)
+{
+  return stringEquals(BACKGROUND_PROCESS_SYMBOL, commandStr);
+}
+
+/*********** Data Process helper methods ***********/
 
 /*
 Kills current process and returns error signal
@@ -98,6 +140,12 @@ int openFileForWriting(char *fileStr)
   return destinationFileDescriptor;
 }
 
+/*
+Verifies if there is a next command value. 
+Input: nextVal (string)
+Output: If FALSE, prints error message and returns 0.
+If TRUE, returns 1. 
+*/
 int hasNoMoreArgumentsAfterCurrent(char *nextVal)
 {
   if (!nextVal)
@@ -133,4 +181,24 @@ int handleRedirectFlow(char **args, int pos, int operationType, int (*openFileHa
     return 2;
   }
   return 0;
+}
+
+void printStructure(struct ShCommand *currCommand)
+{
+  printf("path %s\n", currCommand->path);
+  printf("outRedirFile %s\n", currCommand->outRedirFile);
+  printf("inRedirFile %s\n", currCommand->inRedirFile);
+  printf("isBackgroundProcess %d\n", currCommand->isBackgroundProcess);
+  printStringArr(currCommand->args);
+}
+
+void printStringArr(char **strArr)
+{
+  int i = 0;
+  printf("Content of args\n");
+  while (strArr[i] != NULL)
+  {
+    printf("Args %d is %s\n", i, strArr[i]);
+    ++i;
+  }
 }

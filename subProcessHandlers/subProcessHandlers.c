@@ -67,7 +67,7 @@ int adjustProcessStreams(char **args)
   while (args[i] != NULL)
   {
     // If it finds input redirect symbol <, substitute for NULL and redirect stdin.
-    if (strncmp(RED_IN_SYM, args[i], 1) == 0)
+    if (strncmp(REDIRECT_INPUT_SYMBOL, args[i], 1) == 0)
     {
       inputRedirectStatus = handleRedirectFlow(args, i, INPUT_OPERATION, openFileForReading);
       // Quit on error
@@ -75,7 +75,7 @@ int adjustProcessStreams(char **args)
         return 1;
     }
     //If it finds output redirect symbol >, substitute for NULL and redirect stdout.
-    else if (strncmp(RED_OUT_SYM, args[i], 1) == 0)
+    else if (strncmp(REDIRECT_OUTPUT_SYMBOL, args[i], 1) == 0)
     {
 
       outputRedirectStatus = handleRedirectFlow(args, i, OUTPUT_OPERATION, openFileForWriting);

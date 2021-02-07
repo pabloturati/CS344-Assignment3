@@ -6,49 +6,121 @@
 #include "ioHandlerMethods.h"
 
 /* 
-Takes in a raw string and divides into tokens. Returns array of tokens. 
-Input: inputLine (string *)
+Handles input prompt request. Returns array of separate commands. 
+Input: void
 Output: tokens (array of strings);
-Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Parsing a line"
+Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Reading a line"
 */
-char **splitInputCommand(char *inputLine)
+struct ShCommand *requestAndProcessCommand()
+{
+  struct ShCommand *currCommand = (struct ShCommand *)malloc(sizeof(struct ShCommand));
+  char **commandsArr = malloc(TOKEN_ARR_SIZE * sizeof(char *));
+
+  int commandParseStatus = 1;
+  while (commandParseStatus != 0)
+  {
+    resetCommandInstanceAndArray(currCommand, commandsArr);
+
+    // Prompt user for command
+    printf("%s", PROMPT_STR);
+    char *inputLine = readCommandline();
+
+    // Parse command string
+    if (parseLineToTokenArr(inputLine, commandsArr) == 0)
+    {
+      commandParseStatus = parseStringLineToCommand(commandsArr, currCommand);
+    }
+    else
+      perror(COMMAND_PARSE_ERROR_MSG);
+  }
+  return currCommand;
+}
+
+/* 
+Takes array of raw instructions, expands process id, refactors commands and
+returns an ordere ShCommand struct instance.
+Input: divided array of raw commands (string array)
+Output: ShCommand struct with ordered instructions
+Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Reading a line"
+*/
+int parseStringLineToCommand(char **commandsArr, struct ShCommand *currCommand)
+{
+  int processId = getShellProcessId();
+  int i = 0;
+
+  char *currToken = commandsArr[i];
+
+  while (currToken != NULL)
+  {
+    if (isRedirectInputSymbol(currToken))
+    {
+      char *nextToken = commandsArr[i + 1];
+      if (hasNoMoreArgumentsAfterCurrent(nextToken))
+        return EXIT_FAILURE;
+      currCommand->inRedirFile = nextToken;
+      commandsArr[i] = NULL;
+    }
+    else if (isRedirectOutputSymbol(currToken))
+    {
+      char *nextToken = commandsArr[i + 1];
+      if (hasNoMoreArgumentsAfterCurrent(nextToken))
+        return EXIT_FAILURE;
+      currCommand->outRedirFile = nextToken;
+      commandsArr[i] = NULL;
+    }
+    else if (isRunProcessOnBackgroundSymbol(currToken))
+      currCommand->isBackgroundProcess = TRUE;
+    else
+    {
+      commandsArr[i] = expandProcessVar(commandsArr[i], processId);
+    }
+    ++i;
+    currToken = commandsArr[i];
+  }
+
+  currCommand->path = commandsArr[0];
+  currCommand->args = commandsArr;
+  return executeCommandIT_SUCCESS;
+}
+
+/* 
+Divides single string line command into array of individual tokens 
+Input: user input line (string)
+Output: divided array of raw commands (string array)
+Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Reading a line"
+*/
+int parseLineToTokenArr(char *inputLine, char **commandsArr)
 {
   // Assumes initial size of array of strings (will adjust if necessary)
   int currMax = TOKEN_ARR_SIZE;
-  int pos = 0;
 
-  // Creates pointer to array of string pointer
-  char **tokens = malloc(currMax * sizeof(char *));
-  assert(tokens != NULL);
-
-  // Variable to store individual tokens
-  char *curToken;
+  if (commandsArr == NULL)
+    return EXIT_FAILURE;
 
   // Gets first token. Returns NULL if none.
-  curToken = strtok(inputLine, TOKEN_DELIMETERS);
+  char *curToken = strtok(inputLine, TOKEN_DELIMETERS);
 
-  // Gets current process Id
-  int processId = getShellProcessId();
-
+  int pos = 0;
   while (curToken != NULL)
   {
-    tokens[pos] = expandProcessVar(curToken, processId);
+    //Assigns current token to token array and expands any process variable
+    commandsArr[pos] = curToken;
     ++pos;
 
     // If maximum number of tokens are passed, increase memory allocation
-    if (currMax >= pos)
+    if (currMax <= pos)
     {
       currMax += TOKEN_ARR_SIZE;
-      tokens = realloc(tokens, currMax * sizeof(char *));
-      assert(tokens != NULL);
+      commandsArr = realloc(commandsArr, currMax * sizeof(char *));
+      if (commandsArr == NULL)
+        return EXIT_FAILURE;
     }
-
     curToken = strtok(NULL, TOKEN_DELIMETERS);
   }
 
   // Adds null at last position
-  tokens[pos] = NULL;
-  return tokens;
+  commandsArr[pos] = NULL;
+  return EXIT_SUCCESS;
 }
 
 /* 
@@ -90,21 +162,6 @@ char *readCommandline()
       assert(buffer != NULL);
     }
   }
-}
-
-/* 
-Handles input prompt request. Returns array of separate commands. 
-Input: void
-Output: tokens (array of strings);
-Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shell-in-c/  "Reading a line"
-*/
-char **requestAndTokenizeInput()
-{
-  printf("%s", PROMPT_STR);
-  char *inputLine = readCommandline();
-  char **tokens = splitInputCommand(inputLine);
-  free(inputLine);
-  return tokens;
 }
 
 /*

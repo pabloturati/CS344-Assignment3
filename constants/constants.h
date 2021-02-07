@@ -9,8 +9,9 @@
 #define COMMENT_SIMBOL "#"
 #define VAR_EXPANSION_BUFF_SIZE 1024
 #define PROCESS_ID_VARIABLE "$$"
-#define RED_OUT_SYM ">"
-#define RED_IN_SYM "<"
+#define REDIRECT_OUTPUT_SYMBOL ">"
+#define REDIRECT_INPUT_SYMBOL "<"
+#define BACKGROUND_PROCESS_SYMBOL "&"
 #define OUT_FILE_PERMISSION 0644
 #define KILL_PROCESS_RETURN_VAL 2
 #define HOME_ENV_VAR "HOME"
@@ -23,7 +24,18 @@ const char *MISSING_PARAM_ERROR_MSG_LABEL;
 const char *OPEN_READ_FILE_ERROR_MSG_LABEL;
 const char *OPEN_WRITE_FILE_ERROR_MSG_LABEL;
 const char *REDIRECT_ERROR_MSG_LABEL;
+const char *COMMAND_PARSE_ERROR_MSG;
 
+struct ShCommand
+{
+  char *path;
+  char **args;
+  char *outRedirFile;
+  char *inRedirFile;
+  int isBackgroundProcess;
+};
+
+void resetCommandInstanceAndArray(struct ShCommand *, char **);
 void setStatus(int);
 int getStatus();
 int killChildProcess();
@@ -32,6 +44,15 @@ void reportErrorAndFlushStdOut(const char *);
 int openFileForReading(char *);
 int hasNoMoreArgumentsAfterCurrent(char *);
 int openFileForWriting(char *);
-int handleRedirectFlow(char **args, int pos, int operationType, int (*)(char *));
+int handleRedirectFlow(char **, int, int, int (*)(char *));
+
+int stringEquals(char *, char *);
+int isRedirectInputSymbol(char *);
+int isRedirectOutputSymbol(char *);
+int isRunProcessOnBackgroundSymbol(char *);
+
+// Debugger functions
+void printStructure(struct ShCommand *);
+void printStringArr(char **);
 
 #endif

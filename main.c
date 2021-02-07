@@ -9,9 +9,10 @@ int main()
 {
   do
   {
-    char **tokens = requestAndTokenizeInput();
-    setStatus(executeCommand(tokens));
-    free(tokens);
+    struct ShCommand *currCommand = requestAndProcessCommand();
+    printStructure(currCommand);
+    setStatus(executeCommand(currCommand));
+    free(currCommand);
   } while (TRUE);
   return 0;
 }
