@@ -4,6 +4,7 @@
 #include "constants/constants.h"
 #include "ioHandlerMethods/ioHandlerMethods.h"
 #include "builtinFunctions/builtinFunctions.h"
+#include "subProcessHandlers/subProcessHandlers.h"
 
 int main()
 {

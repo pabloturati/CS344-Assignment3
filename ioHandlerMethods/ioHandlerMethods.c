@@ -80,7 +80,7 @@ int parseStringLineToCommand(char **commandsArr, struct ShCommand *currCommand)
 
   currCommand->path = commandsArr[0];
   currCommand->args = commandsArr;
-  return executeCommandIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 
 /* 

@@ -25,6 +25,7 @@ const char *OPEN_READ_FILE_ERROR_MSG_LABEL;
 const char *OPEN_WRITE_FILE_ERROR_MSG_LABEL;
 const char *REDIRECT_ERROR_MSG_LABEL;
 const char *COMMAND_PARSE_ERROR_MSG;
+const char *FORK_ERROR_MSG;
 
 struct ShCommand
 {
@@ -44,7 +45,7 @@ void reportErrorAndFlushStdOut(const char *);
 int openFileForReading(char *);
 int hasNoMoreArgumentsAfterCurrent(char *);
 int openFileForWriting(char *);
-int handleRedirectFlow(char **, int, int, int (*)(char *));
+int handleRedirectFlow(char *, int, int (*)(char *));
 
 int stringEquals(char *, char *);
 int isRedirectInputSymbol(char *);

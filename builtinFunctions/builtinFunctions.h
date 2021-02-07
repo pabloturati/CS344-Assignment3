@@ -5,7 +5,6 @@ int cdCommand(char **args);
 int exitCommand(char **args);
 int helpCommand(char **args);
 int commandFuncArrLength();
-int executeCommand(char **args);
 int isAComment(char **args);
 int isAnEmptyLineOrComment(char **args);
 

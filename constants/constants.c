@@ -15,6 +15,7 @@ const char *OPEN_READ_FILE_ERROR_MSG_LABEL = "source open()";
 const char *OPEN_WRITE_FILE_ERROR_MSG_LABEL = "target open()";
 const char *REDIRECT_ERROR_MSG_LABEL = "target dup2()";
 const char *COMMAND_PARSE_ERROR_MSG = "command_error()";
+const char *FORK_ERROR_MSG = "fork()";
 
 /*********** Command Structure ***********/
 
@@ -165,13 +166,9 @@ Input:  args - List of commands (by reference)
         openFileHandler (function) - Function to handle the file opening (i.e. reading or writing)
 Output: currentProcessId()
 */
-int handleRedirectFlow(char **args, int pos, int operationType, int (*openFileHandler)(char *))
+int handleRedirectFlow(char *filename, int operationType, int (*openFileHandler)(char *))
 {
-  char *nextVal = args[pos + 1];
-  if (hasNoMoreArgumentsAfterCurrent(nextVal))
-    return 1;
-  args[pos] = NULL;
-  int filePtr = openFileHandler(nextVal);
+  int filePtr = openFileHandler(filename);
   if (filePtr == -1)
     return 1;
   int result = dup2(filePtr, operationType);
