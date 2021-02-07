@@ -63,6 +63,8 @@ function main() {
   #  e -> run executable
   #  v -> run executable with valgrind leak analysis
   #  t -> run executable with testscript
+  #  r -> run executable with testscript (option 2)
+  #  m -> run executable with modified testscript
   while getopts "evtrm" flag; do
     case $flag in
     e) ./$executableFilename ;;

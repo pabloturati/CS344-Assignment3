@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include "../constants/constants.h"
-#include "../subProcessHandlers/subProcessHandlers.h"
+#include "ioHandlerMethods.h"
 
 /* 
 Takes in a raw string and divides into tokens. Returns array of tokens. 
@@ -105,4 +105,42 @@ char **requestAndTokenizeInput()
   char **tokens = splitInputCommand(inputLine);
   free(inputLine);
   return tokens;
+}
+
+/*
+Creates a new string placing the process id where there is a process variable
+Input: str (string) - command containing process id, processId (integer)
+Output: (string *)
+*/
+char *expandProcessVar(char *str, int processId)
+{
+  char *ptr = strstr(str, PROCESS_ID_VARIABLE);
+  //Return if there is no process id variable. Recursive base case
+  if (!ptr)
+    return str;
+
+  // Allocate buffer for substrings
+  char *buffer = calloc(VAR_EXPANSION_BUFF_SIZE, sizeof(char));
+  char *bufferEnd = calloc(VAR_EXPANSION_BUFF_SIZE, sizeof(char));
+
+  int indexOfProcessVar = ptr - str;
+
+  // Copy the head of the string up to the $$ identifier
+  strncpy(buffer, str, indexOfProcessVar);
+  buffer[indexOfProcessVar] = '\0';
+
+  // Index of tail start = right after process var
+  char *indexOfTailStart = str + indexOfProcessVar + strlen(PROCESS_ID_VARIABLE);
+
+  // Index of tail end = right after process var
+  unsigned long indexOfTailEnd = strlen(str) - indexOfProcessVar;
+  // Copy the tails of the string from the identifier
+  strncpy(bufferEnd, indexOfTailStart, indexOfTailEnd);
+  bufferEnd[indexOfTailEnd] = '\0';
+
+  sprintf(buffer + indexOfProcessVar, "%d%s", processId, bufferEnd);
+  free(bufferEnd);
+
+  // Recursive call in case of other variable expansions
+  return expandProcessVar(buffer, processId);
 }

@@ -3,7 +3,6 @@
 
 int launchSubProcess(char **);
 int executeCommand(char **);
-char *expandProcessVar(char *, int);
 int adjustProcessStreams(char **);
 
 #endif
