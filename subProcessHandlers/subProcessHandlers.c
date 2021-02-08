@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 #include <signal.h>
 #include <fcntl.h>
 #include "../constants/constants.h"
@@ -36,10 +37,12 @@ int launchSubProcess(struct ShCommand *commandStruct)
     }
     return killChildProcess();
   default:
-    // If is background process, continue without waiting.
+    // If is background process.
     if (commandStruct->isBackgroundProcess)
     {
-      printf(BACKGROUND_PROCESS_ID_MSG, getpid());
+      // Print child process id (at the start)
+      printf(BACKGROUND_PROCESS_ID_MSG, spawnPid);
+      // Don't wait.
       waitpid(spawnPid, &childProcessStatus, WNOHANG);
     }
     else

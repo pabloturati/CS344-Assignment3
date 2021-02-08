@@ -45,13 +45,14 @@ Reference: parts of code adapted from https://brennan.io/2015/01/16/write-a-shel
 */
 int parseStringLineToCommand(char **commandsArr, struct ShCommand *currCommand)
 {
-  int processId = getShellProcessId();
+  pid_t processId = getShellProcessId();
   int i = 0;
 
   char *currToken = commandsArr[i];
 
   while (currToken != NULL)
   {
+    // Catches input redirect symbol, overwrites array position sets redirect filename
     if (isRedirectInputSymbol(currToken))
     {
       char *nextToken = commandsArr[i + 1];
@@ -60,6 +61,7 @@ int parseStringLineToCommand(char **commandsArr, struct ShCommand *currCommand)
       currCommand->inRedirFile = nextToken;
       commandsArr[i] = NULL;
     }
+    // Catches output redirect symbol, overwrites array position sets redirect filename
     else if (isRedirectOutputSymbol(currToken))
     {
       char *nextToken = commandsArr[i + 1];
@@ -68,15 +70,18 @@ int parseStringLineToCommand(char **commandsArr, struct ShCommand *currCommand)
       currCommand->outRedirFile = nextToken;
       commandsArr[i] = NULL;
     }
+    // Catches ampersand (run in background), overwrites array position sets bool as flag
     else if (isRunProcessOnBackgroundSymbol(currToken))
     {
       currCommand->isBackgroundProcess = TRUE;
       commandsArr[i] = NULL;
     }
+    // Looks and substitutes for process variables.
     else
     {
       commandsArr[i] = expandProcessVar(commandsArr[i], processId);
     }
+    // Next comamnd
     ++i;
     currToken = commandsArr[i];
   }
