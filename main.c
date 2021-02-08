@@ -7,12 +7,22 @@
 #include "subProcessHandlers/subProcessHandlers.h"
 #include "subProcessHandlers/subProcessHandlers.h"
 #include "signalHandlers/signalHandlers.h"
+#include "activeProcessHandlers/activeProcessHandlers.h"
+
+void initializeApp()
+{
+  // Sets SIGINT to be ignored.
+  setIgnoreSIGINT();
+  // Initializes global background process array to empty
+  initializeActiveProcessArr();
+}
 
 int main()
 {
-  initilizeSignalIgnoreHandlers();
+  initializeApp();
   do
   {
+    checkForBackgroundProcessCompletions();
     struct ShCommand *currCommand = requestAndProcessCommand();
     fflush(stdout);
     setStatus(executeCommand(currCommand));

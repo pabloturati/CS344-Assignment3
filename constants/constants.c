@@ -17,8 +17,10 @@ const char *REDIRECT_ERROR_MSG_LABEL = "target dup2()";
 const char *COMMAND_PARSE_ERROR_MSG = "command_error()";
 const char *FORK_ERROR_MSG = "fork()";
 const char *BACKGROUND_PROCESS_ID_MSG = "background pid is %d\n";
-const char *PROCESS_TERMINATION_BY_SIGNAL_MSG = " Terminated by signal 2\n";
-const char *SIGSTOP_FOREGROUND_ONLY_MSG = "Entering foreground-only mode (& is now ignored)";
+const char *PROCESS_TERMINATION_BY_SIGNAL_MSG = "\nTerminated by signal "; //Length 23
+const char *SIGSTOP_FOREGROUND_ONLY_MSG = "Entering foreground-only mode (& is now ignored)\n";
+const char *CHILD_PROCESS_TERMINATION_SUCCESS_MSG = "Background pid %d is done: exit value %d\n";
+const char *CHILD_PROCESS_TERMINATION_ERROR_MSG = "Background pid %d is done. Terminated abnormally: exit value %d\n";
 
 /*********** Command Structure ***********/
 
@@ -32,7 +34,7 @@ void resetCommandInstanceAndArray(struct ShCommand *currCommand, char **commands
   currCommand->isBackgroundProcess = FALSE;
 }
 
-/*********** Global status and accessors ***********/
+/*********** Global variables and accessors ***********/
 
 static int status = 0;
 
@@ -182,6 +184,24 @@ int handleRedirectFlow(char *filename, int operationType, int (*openFileHandler)
   }
   return 0;
 }
+
+/*
+Function to print termination message using reentrant method 
+Input:  const char * message, signal number (integer)
+        pos - Current position (integer)
+        operationType - 0 for input / 1 for output (integer)
+        openFileHandler (function) - Function to handle the file opening (i.e. reading or writing)
+Output: void - prints message of termination using status
+*/
+char *digitArr[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+void writeMessageWithSignalNumber(const char *message, int signo)
+{
+  write(STDOUT_FILENO, message, 23);
+  write(STDOUT_FILENO, digitArr[signo], 2);
+  write(STDOUT_FILENO, "\n", 2);
+}
+
+// FIX Remove
 
 void printStructure(struct ShCommand *currCommand)
 {

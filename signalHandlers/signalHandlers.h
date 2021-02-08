@@ -1,8 +1,16 @@
 #ifndef SIGNALHANDLERS_H
 #define SIGNALHANDLERS_H
 
-void initilizeSignalIgnoreHandlers();
-void initializeChildSignalHandlers();
-void handle_SIGINT(int);
+void handleSIGINT(int);
+void setIgnoreSIGINT();
+void setHandleSIGINT();
+
+void handleSIGTSTP(int);
+void setIgnoreSIGTSTP();
+void setHandleSIGTSTP();
+
+void handleSIGCHLD(int);
+void setIgnoreSIGCHLD();
+void setHandleSIGCHLD();
 
 #endif

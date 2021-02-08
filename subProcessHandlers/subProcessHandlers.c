@@ -9,6 +9,7 @@
 #include "../constants/constants.h"
 #include "../builtinFunctions/builtinFunctions.h"
 #include "../signalHandlers/signalHandlers.h"
+#include "../activeProcessHandlers/activeProcessHandlers.h"
 #include "subProcessHandlers.h"
 
 /* 
@@ -24,8 +25,16 @@ int launchSubProcess(struct ShCommand *commandStruct)
   // Activates SIGINT handler in foreground processes
   if (!commandStruct->isBackgroundProcess)
   {
-    initializeChildSignalHandlers();
+    setHandleSIGINT();
   }
+  else
+  {
+    // Activate CHILD signal handler for background processes
+    // setHandleSIGCHLD();  DOES NOT WORK
+  }
+
+  // Configures SIGTSTP to be ignored
+  // setIgnoreSIGTSTP();
 
   pid_t spawnPid = fork();
 
@@ -52,13 +61,17 @@ int launchSubProcess(struct ShCommand *commandStruct)
       printf(BACKGROUND_PROCESS_ID_MSG, spawnPid);
       fflush(stdout);
       // Don't wait.
-      waitpid(spawnPid, &childProcessStatus, WNOHANG);
+      int terminationStatus = waitpid(spawnPid, &childProcessStatus, WNOHANG);
+      if (terminationStatus == 0)
+      {
+        registerBackgroundProcess(spawnPid);
+      }
     }
     else
     {
       // Else wait for child to finish.
       waitpid(spawnPid, &childProcessStatus, 0);
-      initilizeSignalIgnoreHandlers();
+      setIgnoreSIGINT();
     }
   }
   return childProcessStatus > 0;

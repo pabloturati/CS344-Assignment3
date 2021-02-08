@@ -18,6 +18,7 @@
 #define INPUT_OPERATION 0
 #define OUTPUT_OPERATION 1
 #define NULL_REDIRECT_PATH "/dev/null"
+#define MAX_ACTIVE_PROCESSES 50
 
 const char *TOO_FEW_ARGUMENT_MSG;
 const char *EXEC_ERROR_MSG_LABEL;
@@ -30,6 +31,8 @@ const char *FORK_ERROR_MSG;
 const char *BACKGROUND_PROCESS_ID_MSG;
 const char *PROCESS_TERMINATION_BY_SIGNAL_MSG;
 const char *SIGSTOP_FOREGROUND_ONLY_MSG;
+const char *CHILD_PROCESS_TERMINATION_SUCCESS_MSG;
+const char *CHILD_PROCESS_TERMINATION_ERROR_MSG;
 
 struct ShCommand
 {
@@ -55,6 +58,7 @@ int stringEquals(char *, char *);
 int isRedirectInputSymbol(char *);
 int isRedirectOutputSymbol(char *);
 int isRunProcessOnBackgroundSymbol(char *);
+void writeMessageWithSignalNumber(const char *, int);
 
 // Debugger functions
 void printStructure(struct ShCommand *);

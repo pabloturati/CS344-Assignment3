@@ -20,6 +20,7 @@ declare -a componentList=(
   "subProcessHandlers"
   "builtinFunctions"
   "signalHandlers"
+  "activeProcessHandlers"
 )
 
 # Cleans previously compiled files and created folders
