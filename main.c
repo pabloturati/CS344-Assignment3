@@ -5,6 +5,8 @@
 #include "ioHandlerMethods/ioHandlerMethods.h"
 #include "builtinFunctions/builtinFunctions.h"
 #include "subProcessHandlers/subProcessHandlers.h"
+#include "subProcessHandlers/subProcessHandlers.h"
+#include "signalHandlers/signalHandlers.h"
 
 int main()
 {

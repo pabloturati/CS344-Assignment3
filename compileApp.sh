@@ -19,6 +19,7 @@ declare -a componentList=(
   "ioHandlerMethods"
   "subProcessHandlers"
   "builtinFunctions"
+  "signalHandlers"
 )
 
 # Cleans previously compiled files and created folders

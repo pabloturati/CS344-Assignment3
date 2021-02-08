@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include "../constants/constants.h"
 #include "../builtinFunctions/builtinFunctions.h"
+#include "../signalHandlers/signalHandlers.h"
 #include "subProcessHandlers.h"
 
 /* 
@@ -111,25 +112,4 @@ int executeCommand(struct ShCommand *commandStruct)
 
   // If not found in the builtin commands, execute a subprocess
   return launchSubProcess(commandStruct);
-}
-
-void initilizeSignalIgnoreHandlers()
-{
-  struct sigaction ignoreAction = {0};
-  ignoreAction.sa_handler = SIG_IGN;
-  sigaction(SIGINT, &ignoreAction, NULL);
-}
-
-void handle_SIGINT(int signo)
-{
-  write(STDOUT_FILENO, PROCESS_TERMINATION_BY_SIGNAL_MSG, 25);
-}
-
-void initializeChildSignalHandlers()
-{
-  struct sigaction SIGINT_action = {0};
-  SIGINT_action.sa_handler = handle_SIGINT;
-  sigfillset(&SIGINT_action.sa_mask);
-  SIGINT_action.sa_flags = 0;
-  sigaction(SIGINT, &SIGINT_action, NULL);
 }
