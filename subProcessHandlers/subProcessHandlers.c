@@ -20,7 +20,14 @@ int launchSubProcess(struct ShCommand *commandStruct)
 {
   int childProcessStatus = 0;
 
+  // Activates SIGINT handler in foreground processes
+  if (!commandStruct->isBackgroundProcess)
+  {
+    initializeChildSignalHandlers();
+  }
+
   pid_t spawnPid = fork();
+
   switch (spawnPid)
   {
   case -1: // In case of Fork error
@@ -42,6 +49,7 @@ int launchSubProcess(struct ShCommand *commandStruct)
     {
       // Print child process id (at the start)
       printf(BACKGROUND_PROCESS_ID_MSG, spawnPid);
+      fflush(stdout);
       // Don't wait.
       waitpid(spawnPid, &childProcessStatus, WNOHANG);
     }
@@ -49,6 +57,7 @@ int launchSubProcess(struct ShCommand *commandStruct)
     {
       // Else wait for child to finish.
       waitpid(spawnPid, &childProcessStatus, 0);
+      initilizeSignalIgnoreHandlers();
     }
   }
   return childProcessStatus > 0;
@@ -74,7 +83,7 @@ int adjustProcessStreams(struct ShCommand *commandStruct)
   }
   if (commandStruct->outRedirFile || commandStruct->isBackgroundProcess)
   {
-    char *outputRedirectFile = commandStruct->outRedirFile ? commandStruct->inRedirFile : NULL_REDIRECT_PATH;
+    char *outputRedirectFile = commandStruct->outRedirFile ? commandStruct->outRedirFile : NULL_REDIRECT_PATH;
     outputRedirectStatus = handleRedirectFlow(outputRedirectFile, OUTPUT_OPERATION, openFileForWriting);
   }
   return (inputRedirectStatus == 0 && outputRedirectStatus == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -102,4 +111,25 @@ int executeCommand(struct ShCommand *commandStruct)
 
   // If not found in the builtin commands, execute a subprocess
   return launchSubProcess(commandStruct);
+}
+
+void initilizeSignalIgnoreHandlers()
+{
+  struct sigaction ignoreAction = {0};
+  ignoreAction.sa_handler = SIG_IGN;
+  sigaction(SIGINT, &ignoreAction, NULL);
+}
+
+void handle_SIGINT(int signo)
+{
+  write(STDOUT_FILENO, PROCESS_TERMINATION_BY_SIGNAL_MSG, 25);
+}
+
+void initializeChildSignalHandlers()
+{
+  struct sigaction SIGINT_action = {0};
+  SIGINT_action.sa_handler = handle_SIGINT;
+  sigfillset(&SIGINT_action.sa_mask);
+  SIGINT_action.sa_flags = 0;
+  sigaction(SIGINT, &SIGINT_action, NULL);
 }

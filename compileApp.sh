@@ -4,7 +4,14 @@
 preCompilePackage="component_archive"
 executableFilename="smallsh"
 mainFilename="main.c"
-testOutputFiles="*.o *.a junk* mytestresults mytestresults myModifiedTestresults"
+testOutputFiles="
+  *.o 
+  *.a 
+  junk* 
+  mytestresults 
+  myModifiedTestresults 
+  testfile.txt 
+  ~/testdir*"
 
 # Components
 declare -a componentList=(
@@ -63,7 +70,7 @@ function main() {
   #  e -> run executable
   #  v -> run executable with valgrind leak analysis
   #  t -> run executable with testscript
-  #  r -> run executable with testscript (option 2)
+  #  r -> run executable with testscript and send results to a report file
   #  m -> run executable with modified testscript
   while getopts "evtrm" flag; do
     case $flag in

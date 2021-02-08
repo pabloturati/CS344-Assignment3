@@ -8,6 +8,7 @@
 
 int main()
 {
+  initilizeSignalIgnoreHandlers();
   do
   {
     struct ShCommand *currCommand = requestAndProcessCommand();

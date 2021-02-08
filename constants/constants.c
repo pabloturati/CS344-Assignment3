@@ -17,6 +17,7 @@ const char *REDIRECT_ERROR_MSG_LABEL = "target dup2()";
 const char *COMMAND_PARSE_ERROR_MSG = "command_error()";
 const char *FORK_ERROR_MSG = "fork()";
 const char *BACKGROUND_PROCESS_ID_MSG = "background pid is %d\n";
+const char *PROCESS_TERMINATION_BY_SIGNAL_MSG = " Terminated by signal 2\n";
 
 /*********** Command Structure ***********/
 
