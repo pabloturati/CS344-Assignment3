@@ -11,7 +11,6 @@ int main()
   do
   {
     struct ShCommand *currCommand = requestAndProcessCommand();
-    printStructure(currCommand);
     setStatus(executeCommand(currCommand));
     free(currCommand);
   } while (TRUE);

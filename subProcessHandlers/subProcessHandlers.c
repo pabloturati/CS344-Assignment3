@@ -36,8 +36,17 @@ int launchSubProcess(struct ShCommand *commandStruct)
     }
     return killChildProcess();
   default:
-    // Parent execution. Waits for child to complete.
-    waitpid(spawnPid, &childProcessStatus, 0);
+    // If is background process, continue without waiting.
+    if (commandStruct->isBackgroundProcess)
+    {
+      printf(BACKGROUND_PROCESS_ID_MSG, getpid());
+      waitpid(spawnPid, &childProcessStatus, WNOHANG);
+    }
+    else
+    {
+      // Else wait for child to finish.
+      waitpid(spawnPid, &childProcessStatus, 0);
+    }
   }
   return childProcessStatus > 0;
 }
@@ -52,13 +61,18 @@ int adjustProcessStreams(struct ShCommand *commandStruct)
 {
   int outputRedirectStatus = 0;
   int inputRedirectStatus = 0;
-  if (commandStruct->inRedirFile)
+
+  // If the user requested a redirect or if this is a background process
+  if (commandStruct->inRedirFile || commandStruct->isBackgroundProcess)
   {
-    inputRedirectStatus = handleRedirectFlow(commandStruct->inRedirFile, INPUT_OPERATION, openFileForReading);
+    // Redirects input accouding to user request or, if is background process, to /dev/null
+    char *inputRedirectFile = commandStruct->inRedirFile ? commandStruct->inRedirFile : NULL_REDIRECT_PATH;
+    inputRedirectStatus = handleRedirectFlow(inputRedirectFile, INPUT_OPERATION, openFileForReading);
   }
-  if (commandStruct->outRedirFile)
+  if (commandStruct->outRedirFile || commandStruct->isBackgroundProcess)
   {
-    outputRedirectStatus = handleRedirectFlow(commandStruct->outRedirFile, OUTPUT_OPERATION, openFileForWriting);
+    char *outputRedirectFile = commandStruct->outRedirFile ? commandStruct->inRedirFile : NULL_REDIRECT_PATH;
+    outputRedirectStatus = handleRedirectFlow(outputRedirectFile, OUTPUT_OPERATION, openFileForWriting);
   }
   return (inputRedirectStatus == 0 && outputRedirectStatus == 0) ? 0 : 1;
 }

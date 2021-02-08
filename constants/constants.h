@@ -17,6 +17,7 @@
 #define HOME_ENV_VAR "HOME"
 #define INPUT_OPERATION 0
 #define OUTPUT_OPERATION 1
+#define NULL_REDIRECT_PATH "/dev/null"
 
 const char *TOO_FEW_ARGUMENT_MSG;
 const char *EXEC_ERROR_MSG_LABEL;
@@ -26,6 +27,7 @@ const char *OPEN_WRITE_FILE_ERROR_MSG_LABEL;
 const char *REDIRECT_ERROR_MSG_LABEL;
 const char *COMMAND_PARSE_ERROR_MSG;
 const char *FORK_ERROR_MSG;
+const char *BACKGROUND_PROCESS_ID_MSG;
 
 struct ShCommand
 {

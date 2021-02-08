@@ -69,7 +69,10 @@ int parseStringLineToCommand(char **commandsArr, struct ShCommand *currCommand)
       commandsArr[i] = NULL;
     }
     else if (isRunProcessOnBackgroundSymbol(currToken))
+    {
       currCommand->isBackgroundProcess = TRUE;
+      commandsArr[i] = NULL;
+    }
     else
     {
       commandsArr[i] = expandProcessVar(commandsArr[i], processId);
