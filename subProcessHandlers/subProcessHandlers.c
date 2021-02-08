@@ -58,7 +58,7 @@ int launchSubProcess(struct ShCommand *commandStruct)
 Handles input redirection
 If input or output redirection found, cuts command list and redirects accordingly
 Input: struct ShCommand
-Output: 0 in case of success, otherwise error code > 0
+Output: 0 in case of success
 */
 int adjustProcessStreams(struct ShCommand *commandStruct)
 {
@@ -77,7 +77,7 @@ int adjustProcessStreams(struct ShCommand *commandStruct)
     char *outputRedirectFile = commandStruct->outRedirFile ? commandStruct->inRedirFile : NULL_REDIRECT_PATH;
     outputRedirectStatus = handleRedirectFlow(outputRedirectFile, OUTPUT_OPERATION, openFileForWriting);
   }
-  return (inputRedirectStatus == 0 && outputRedirectStatus == 0) ? 0 : 1;
+  return (inputRedirectStatus == 0 && outputRedirectStatus == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* 
