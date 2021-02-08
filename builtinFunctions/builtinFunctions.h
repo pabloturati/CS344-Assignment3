@@ -3,7 +3,7 @@
 
 int cdCommand(char **args);
 int exitCommand(char **args);
-int helpCommand(char **args);
+int statusCommand(char **args);
 int commandFuncArrLength();
 int isAComment(char **args);
 int isAnEmptyLineOrComment(char **args);

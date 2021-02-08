@@ -12,6 +12,7 @@ int main()
   do
   {
     struct ShCommand *currCommand = requestAndProcessCommand();
+    fflush(stdout);
     setStatus(executeCommand(currCommand));
     free(currCommand);
   } while (TRUE);

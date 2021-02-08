@@ -71,7 +71,7 @@ int parseStringLineToCommand(char **commandsArr, struct ShCommand *currCommand)
       commandsArr[i] = NULL;
     }
     // Catches ampersand (run in background), overwrites array position sets bool as flag
-    else if (isRunProcessOnBackgroundSymbol(currToken))
+    else if (isRunProcessOnBackgroundSymbol(currToken) && commandsArr[i + 1] == NULL)
     {
       currCommand->isBackgroundProcess = TRUE;
       commandsArr[i] = NULL;

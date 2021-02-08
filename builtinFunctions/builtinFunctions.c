@@ -17,7 +17,7 @@ char *SHELL_COMMANDS[] = {"cd", "exit", "status"};
 int (*shellCommandFunctions[])(char **) = {
     &cdCommand,
     &exitCommand,
-    &helpCommand};
+    &statusCommand};
 
 // Returns the array size of the identifiers. Allows for simple new command additions
 int commandFuncArrLength()
@@ -46,7 +46,7 @@ int exitCommand(char **args)
   return getStatus();
 }
 
-int helpCommand(char **args)
+int statusCommand(char **args)
 {
   int status = getStatus();
   printf("%d\n", status);

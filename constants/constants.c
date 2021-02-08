@@ -71,15 +71,15 @@ int stringEquals(char *str1, char *str2)
 /* Bools. Return 1 for TRUE */
 int isRedirectInputSymbol(char *commandStr)
 {
-  return stringEquals(REDIRECT_INPUT_SYMBOL, commandStr);
+  return stringEquals(REDIRECT_INPUT_SYMBOL, commandStr) && strlen(commandStr) == 1;
 }
 int isRedirectOutputSymbol(char *commandStr)
 {
-  return stringEquals(REDIRECT_OUTPUT_SYMBOL, commandStr);
+  return stringEquals(REDIRECT_OUTPUT_SYMBOL, commandStr) && strlen(commandStr) == 1;
 }
 int isRunProcessOnBackgroundSymbol(char *commandStr)
 {
-  return stringEquals(BACKGROUND_PROCESS_SYMBOL, commandStr);
+  return stringEquals(BACKGROUND_PROCESS_SYMBOL, commandStr) && strlen(commandStr) == 1;
 }
 
 /*********** Data Process helper methods ***********/
