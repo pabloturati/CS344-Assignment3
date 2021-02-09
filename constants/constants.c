@@ -17,8 +17,9 @@ const char *REDIRECT_ERROR_MSG_LABEL = "target dup2()";
 const char *COMMAND_PARSE_ERROR_MSG = "command_error()";
 const char *FORK_ERROR_MSG = "fork()";
 const char *BACKGROUND_PROCESS_ID_MSG = "background pid is %d\n";
-const char *PROCESS_TERMINATION_BY_SIGNAL_MSG = "\nTerminated by signal "; //Length 23
-const char *SIGSTOP_FOREGROUND_ONLY_MSG = "Entering foreground-only mode (& is now ignored)\n";
+const char *PROCESS_TERMINATION_BY_SIGNAL_MSG = "\nTerminated by signal ";                            //Length 23
+const char *SIGSTOP_ENTER_FOREGROUND_ONLY_MSG = "Entering foreground-only mode (& is now ignored)\n"; //Length 50
+const char *SIGSTOP_EXIT_FOREGROUND_ONLY_MSG = "Exiting foreground-only mode\n";                      // Length: 30
 const char *CHILD_PROCESS_TERMINATION_SUCCESS_MSG = "Background pid %d is done: exit value %d\n";
 const char *CHILD_PROCESS_TERMINATION_ERROR_MSG = "Background pid %d is done. Terminated abnormally: exit value %d\n";
 
@@ -37,6 +38,27 @@ void resetCommandInstanceAndArray(struct ShCommand *currCommand, char **commands
 /*********** Global variables and accessors ***********/
 
 static int status = 0;
+static int foregroundModeOnly = FALSE;
+
+/*
+Getter method for current foregroun mode value
+Input: void
+Output: current foreground mode (int) 
+*/
+int getForegroundModeVal()
+{
+  return foregroundModeOnly;
+}
+
+/*
+Togglee foreground mode
+Input: void
+Output: void 
+*/
+void toggleForegroundMode()
+{
+  foregroundModeOnly = !foregroundModeOnly;
+}
 
 /*
 Getter function for global variable 'status'

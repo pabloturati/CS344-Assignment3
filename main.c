@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <signal.h>
+#include <unistd.h>
+
 #include "constants/constants.h"
 #include "ioHandlerMethods/ioHandlerMethods.h"
 #include "builtinFunctions/builtinFunctions.h"
@@ -15,6 +19,8 @@ void initializeApp()
   setIgnoreSIGINT();
   // Initializes global background process array to empty
   initializeActiveProcessArr();
+  // Sets a customer handler for SIGTSTP
+  setHandleSIGTSTP();
 }
 
 int main()

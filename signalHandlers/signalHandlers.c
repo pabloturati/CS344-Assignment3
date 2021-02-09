@@ -57,7 +57,11 @@ Output: void
 */
 void handleSIGTSTP(int signo)
 {
-  write(STDOUT_FILENO, SIGSTOP_FOREGROUND_ONLY_MSG, 49);
+  if (!getForegroundModeVal())
+    write(STDOUT_FILENO, SIGSTOP_ENTER_FOREGROUND_ONLY_MSG, 49);
+  else
+    write(STDOUT_FILENO, SIGSTOP_EXIT_FOREGROUND_ONLY_MSG, 29);
+  toggleForegroundMode();
 }
 
 /*
@@ -72,6 +76,7 @@ void setIgnoreSIGTSTP()
   ignoreAction.sa_handler = SIG_IGN;
   sigaction(SIGTSTP, &ignoreAction, NULL);
 }
+
 /*
 Configures a callback for SIGTSTP
 Input: void
@@ -80,62 +85,9 @@ Adapted from class example 5_3_siguser.c
 */
 void setHandleSIGTSTP()
 {
-  struct sigaction SIGTSTP_action = {0};
+  struct sigaction SIGTSTP_action = {0}, ignore_action = {0};
   SIGTSTP_action.sa_handler = handleSIGTSTP;
-  sigfillset(&SIGTSTP_action.sa_mask);
-  SIGTSTP_action.sa_flags = 0;
+  sigemptyset(&SIGTSTP_action.sa_mask);
+  SIGTSTP_action.sa_flags = SA_RESTART;
   sigaction(SIGTSTP, &SIGTSTP_action, NULL);
 }
-
-/*********** SIGCHLD Handlers and methods ***********/
-
-// /*
-// SIGCHLD callback
-// Input: void
-// Output: void
-// Reference: Adapted in parts from http://www.microhowto.info/howto/reap_zombie_processes_using_a_sigchld_handler.html
-// */
-// void handleSIGCHLD(int signo)
-// {
-
-//   int saved_errno = errno;
-//   write(STDOUT_FILENO, SIGCHLD_TERMINATION_MSG_PART_1, 17);
-//   // PID here
-//   write(STDOUT_FILENO, SIGCHLD_TERMINATION_MSG_PART_2, 22);
-//   while (waitpid((pid_t)(-1), 0, WNOHANG) > 0)
-//   {
-//   }
-//   errno = saved_errno;
-// }
-
-// /*
-// Configures a callback for SIGCHLD
-// Input: void
-// Output: void
-// Adapted from class example 5_3_siguser.c
-// */
-// void setIgnoreSIGCHLD()
-// {
-//   struct sigaction ignoreAction = {0};
-//   ignoreAction.sa_handler = SIG_IGN;
-//   sigaction(SIGCHLD, &ignoreAction, NULL);
-// }
-
-// /*
-// Configures a callback for SIGCHLD. To be used to reap background child processes
-// Input: void
-// Output: void
-// Reference: Adapted in parts from https://www.andrew.cmu.edu/course/15-310/applications/homework/homework4/signal_example2.html
-// */
-// void setHandleSIGCHLD()
-// {
-//   struct sigaction SIGCHILD_action;
-//   SIGCHILD_action.sa_handler = handleSIGCHLD;
-//   sigemptyset(&SIGCHILD_action.sa_mask);
-//   SIGCHILD_action.sa_flags = 1;
-//   if (sigaction(SIGCHLD, &SIGCHILD_action, 0) == -1)
-//   {
-//     perror(0);
-//     exit(1);
-//   }
-// }

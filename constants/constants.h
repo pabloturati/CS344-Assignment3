@@ -30,9 +30,10 @@ const char *COMMAND_PARSE_ERROR_MSG;
 const char *FORK_ERROR_MSG;
 const char *BACKGROUND_PROCESS_ID_MSG;
 const char *PROCESS_TERMINATION_BY_SIGNAL_MSG;
-const char *SIGSTOP_FOREGROUND_ONLY_MSG;
+const char *SIGSTOP_ENTER_FOREGROUND_ONLY_MSG;
 const char *CHILD_PROCESS_TERMINATION_SUCCESS_MSG;
 const char *CHILD_PROCESS_TERMINATION_ERROR_MSG;
+const char *SIGSTOP_EXIT_FOREGROUND_ONLY_MSG;
 
 struct ShCommand
 {
@@ -43,6 +44,8 @@ struct ShCommand
   int isBackgroundProcess;
 };
 
+int getForegroundModeVal();
+void toggleForegroundMode();
 void resetCommandInstanceAndArray(struct ShCommand *, char **);
 void setStatus(int);
 int getStatus();

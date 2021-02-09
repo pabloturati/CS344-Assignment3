@@ -9,8 +9,4 @@ void handleSIGTSTP(int);
 void setIgnoreSIGTSTP();
 void setHandleSIGTSTP();
 
-void handleSIGCHLD(int);
-void setIgnoreSIGCHLD();
-void setHandleSIGCHLD();
-
 #endif

@@ -27,14 +27,6 @@ int launchSubProcess(struct ShCommand *commandStruct)
   {
     setHandleSIGINT();
   }
-  else
-  {
-    // Activate CHILD signal handler for background processes
-    // setHandleSIGCHLD();  DOES NOT WORK
-  }
-
-  // Configures SIGTSTP to be ignored
-  // setIgnoreSIGTSTP();
 
   pid_t spawnPid = fork();
 
@@ -44,6 +36,7 @@ int launchSubProcess(struct ShCommand *commandStruct)
     perror(FORK_ERROR_MSG);
     return 1;
   case 0: // Child process
+    setIgnoreSIGTSTP();
     if (adjustProcessStreams(commandStruct) == 0)
     {
       // Execute command
@@ -54,8 +47,8 @@ int launchSubProcess(struct ShCommand *commandStruct)
     }
     return killChildProcess();
   default:
-    // If is background process.
-    if (commandStruct->isBackgroundProcess)
+    // If is background process and it's not foregreound only mode
+    if (commandStruct->isBackgroundProcess && !getForegroundModeVal())
     {
       // Print child process id (at the start)
       printf(BACKGROUND_PROCESS_ID_MSG, spawnPid);
