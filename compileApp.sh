@@ -71,16 +71,16 @@ function main() {
   # Param triggers:
   #  e -> run executable
   #  v -> run executable with valgrind leak analysis
-  #  t -> run executable with testscript
+  #  t -> run executable with testscript to stdout
   #  r -> run executable with testscript and send results to a report file
-  #  m -> run executable with modified testscript
-  while getopts "evtrm" flag; do
+  #  c -> performs only cleaning of compilation files and creted test files
+  while getopts "evtrc" flag; do
     case $flag in
     e) ./$executableFilename ;;
     v) valgrind ./$executableFilename ;;
     t) ./p3testscript 2>&1 ;;
     r) ./p3testscript >mytestresults 2>&1 ;;
-    m) ./modifiedTestScript >myModifiedTestresults 2>&1 ;;
+    c) preCompileClean && postCompileClean ;;
     esac
     shift
   done

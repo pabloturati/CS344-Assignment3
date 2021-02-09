@@ -43,6 +43,15 @@ Refer to the contents of `compileApp.sh` for a detailed command list on how to m
 
 `$ compileApp.sh -e`
 
+### Compile run available commands
+
+The following flags can be passed to the compileApp.sh shell script:
+  - e -> run executable
+  - v -> run executable with valgrind leak analysis
+  - t -> run executable with testscript to stdout
+  - r -> run executable with testscript and send results to a report file
+  - c -> performs only cleaning of compilation files and creted test files
+
 ## Run procedure
 
 Once the application executable has been created `smallsh`. It can be run as follows:
@@ -50,7 +59,6 @@ Once the application executable has been created `smallsh`. It can be run as fol
 `$ ./smallsh`
 
 To compile and run in a single step run: `$ compileApp.sh -e`
-To compile and run memory leaks debugger run: `$ compileApp.sh -v`
 
 ## Additional resources
 
@@ -65,13 +73,23 @@ root
 ├── constants
 │   ├── constants.c
 │   └── constants.h
-├── movieList
-│   ├── movieList.c
-│   └── movieList.h
-└── fileHandlers
-    ├── fileHandlers.c
-    └── fileHandlers.h
+├── activeProcessHandlers
+│   ├── activeProcessHandlers.c
+│   └── activeProcessHandlers.h
+├── ioHandlerMethods
+│   ├── ioHandlerMethods.c
+│   └── ioHandlerMethods.h
+├── signalHandlers
+│   ├── signalHandlers.c
+│   └── signalHandlers.h
+├── subProcessHandlers
+│   ├── subProcessHandlers.c
+│   └── subProcessHandlers.h
+└── builtinFunctions
+    ├── builtinFunctions.c
+    └── builtinFunctions.h
 ```
+
 
 ## Version control
 
